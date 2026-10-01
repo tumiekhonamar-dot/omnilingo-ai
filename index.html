@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omnilingo Global AI Tools Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc;
+            --text-muted: #94a3b8; --primary: #8b5cf6; --primary-hover: #7c3aed; --border-color: #334155;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px 10px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 2rem; background: linear-gradient(to right, #c084fc, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tools-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .tool-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
+        .tool-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
+        .tool-title i { color: var(--primary); }
+        .tool-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 15px; }
+        .upload-dropzone { background: rgba(139,92,246,0.05); border: 2px dashed var(--primary); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; margin-bottom: 15px; }
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+        textarea, input[type="text"] { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; background: #0f172a; color: var(--text-main); box-sizing: border-box; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 11px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        input[type="file"] { display: none; }
+        .ai-results-container { display: none; margin-top: 15px; flex-direction: column; gap: 12px; }
+        .result-card { background: #0f172a; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; font-size: 0.9rem; line-height: 1.5; }
+        .result-card-title { font-weight: 600; color: #c084fc; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .preview-thumb { max-width: 80px; max-height: 80px; border-radius: 6px; margin-top: 8px; display: none; border: 1px solid var(--border-color); }
+        .counter-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .btn-clear { background: #ef4444; color: white; border: none; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+        .adsense-slot { background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); text-align: center; padding: 10px; border-radius: 8px; color: var(--text-muted); font-size: 0.78rem; margin: 15px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Omnilingo Global AI Dashboard</h1>
+        <p>Advanced AI Tools & Smart Assistant for Worldwide Traffic.</p>
+    </div>
+
+    <div class="tools-grid">
+        <!-- Tool 1: Snap & Explain AI -->
+        <div class="tool-box">
+            <div class="tool-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Snap & Explain AI</div>
+            <div class="tool-desc">Upload any screenshot, type your problem, and get secure server-processed AI solutions.</div>
+            
+            <div class="upload-dropzone" onclick="document.getElementById('imageInput').click()">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.8rem; color: var(--primary); margin-bottom: 6px;"></i>
+                <h4 id="uploadLabel" style="margin: 4px 0; font-size: 0.9rem;">Drop screenshot or click to browse</h4>
+                <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+            </div>
+            <img id="imagePreview" class="preview-thumb" alt="Preview">
+
+            <div class="input-group">
+                <label for="userQuery">What do you want to solve about this image?</label>
+                <input type="text" id="userQuery" placeholder="e.g., Fix this UI bug or explain error.">
+            </div>
+
+            <button class="btn-primary" type="button" onclick="runServerAI()">
+                <i class="fa-solid fa-bolt"></i> Analyze via Secure Server
+            </button>
+
+            <div id="aiResultsWrapper" class="ai-results-container">
+                <div class="result-card">
+                    <div class="result-card-title"><i class="fa-solid fa-brain"></i> Understand & Solution</div>
+                    <div id="resText"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="adsense-slot">[ Google AdSense Banner Space ]</div>
+
+        <!-- Tool 2: Word & Character Counter -->
+        <div class="tool-box">
+            <div class="tool-title"><i class="fa-solid fa-file-lines"></i> Word & Character Counter</div>
+            <div class="tool-desc">Instant text analysis tool with clear reset option.</div>
+            <textarea id="wordText" rows="3" placeholder="Type or paste your content here..."></textarea>
+            <div class="counter-footer">
+                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                    Words: <span id="wCount" style="color: var(--primary); font-weight: 700;">0</span> | 
+                    Characters: <span id="cCount" style="color: var(--primary); font-weight: 700;">0</span>
+                </div>
+                <button class="btn-clear" onclick="clearCounter()"><i class="fa-solid fa-trash-can"></i> Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let uploadedFileObj = null;
+    let base64Image = null;
+
+    function previewImage(event) {
+        uploadedFileObj = event.target.files[0];
+        const display = document.getElementById('uploadLabel');
+        const preview = document.getElementById('imagePreview');
+        if(uploadedFileObj) {
+            display.innerHTML = `<i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Selected: ${uploadedFileObj.name}`;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                base64Image = e.target.result.split(',')[1];
+            }
+            reader.readAsDataURL(uploadedFileObj);
+        }
+    }
+
+    async function runServerAI() {
+        const query = document.getElementById('userQuery').value.trim() || "Analyze this image.";
+        const resultsWrapper = document.getElementById('aiResultsWrapper');
+        const resText = document.getElementById('resText');
+        
+        resultsWrapper.style.display = 'flex';
+        resText.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing through secure backend server...`;
+
+        try {
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    image: base64Image,
+                    mimeType: uploadedFileObj ? uploadedFileObj.type : null,
+                    query: query
+                })
+            });
+
+            const data = await response.json();
+            if(data.success) {
+                resText.innerText = data.result;
+            } else {
+                resText.innerHTML = `<span style="color: #ef4444;">Error: ${data.error}</span>`;
+            }
+        } catch(err) {
+            resText.innerHTML = `<span style="color: #ef4444;">Connection error: ${err.message}</span>`;
+        }
+    }
+
+    const wordText = document.getElementById('wordText');
+    const wCount = document.getElementById('wCount');
+    const cCount = document.getElementById('cCount');
+    wordText.addEventListener('input', () => {
+        const val = wordText.value.trim();
+        cCount.innerText = val.length;
+        wCount.innerText = val === '' ? 0 : val.split(/\s+/).length;
+    });
+    function clearCounter() {
+        wordText.value = ''; wCount.innerText = '0'; cCount.innerText = '0';
+    }
+</script>
+</body>
+</html>
