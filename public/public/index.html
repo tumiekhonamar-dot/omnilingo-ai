@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omnilingo Global Pro AI & Utility Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0b0f19; --card-bg: #1e293b; --text-main: #f8fafc;
+            --text-muted: #94a3b8; --primary: #8b5cf6; --primary-hover: #7c3aed; --border-color: #334155;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px 10px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 2.2rem; background: linear-gradient(to right, #c084fc, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+        .header p { color: var(--text-muted); font-size: 0.95rem; }
+        .region-badge { display: inline-block; background: rgba(139,92,246,0.1); color: #c084fc; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-top: 8px; border: 1px solid var(--border-color); }
+        
+        .policy-nav { display: flex; justify-content: center; gap: 15px; margin: 15px 0 25px 0; flex-wrap: wrap; font-size: 0.82rem; }
+        .policy-nav a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .policy-nav a:hover { color: var(--primary); }
+
+        .tools-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        @media(min-width: 768px) { .tools-grid { grid-template-columns: repeat(2, 1fr); } }
+        
+        .tool-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 22px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; }
+        .tool-full { grid-column: 1 / -1; }
+        
+        .tool-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
+        .tool-title i { color: var(--primary); }
+        .tool-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; }
+        
+        .upload-dropzone { background: rgba(139,92,246,0.05); border: 2px dashed var(--primary); border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; margin-bottom: 12px; transition: all 0.3s ease; }
+        .upload-dropzone:hover { background: rgba(139,92,246,0.1); }
+        
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; color: var(--text-muted); }
+        textarea, input[type="text"], select { width: 100%; padding: 11px 13px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.88rem; background: #0f172a; color: var(--text-main); box-sizing: border-box; outline: none; transition: border-color 0.2s; }
+        textarea:focus, input[type="text"]:focus, select:focus { border-color: var(--primary); }
+        
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 11px 16px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; margin-top: 8px; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        input[type="file"] { display: none; }
+        
+        .ai-results-container { display: none; margin-top: 12px; flex-direction: column; gap: 10px; }
+        .result-card { background: #0f172a; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; font-size: 0.88rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: #e2e8f0; }
+        .result-card-title { font-weight: 600; color: #c084fc; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
+        .preview-thumb { max-width: 90px; max-height: 90px; border-radius: 8px; margin-top: 8px; display: none; border: 1px solid var(--border-color); object-fit: cover; }
+        
+        .counter-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex-wrap: wrap; gap: 8px; font-size: 0.82rem; }
+        .btn-clear { background: #ef4444; color: white; border: none; padding: 5px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+        .btn-clear:hover { opacity: 0.9; }
+        
+        .adsense-slot { background: rgba(255,255,255,0.02); border: 1px dashed var(--border-color); text-align: center; padding: 14px; border-radius: 8px; color: var(--text-muted); font-size: 0.78rem; margin: 10px 0; grid-column: 1 / -1; }
+        
+        .output-box-inline { background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; word-break: break-all; color: #38bdf8; min-height: 25px; }
+        
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+        .modal-content { background-color: var(--card-bg); margin: 15% auto; padding: 25px; border: 1px solid var(--border-color); width: 85%; max-width: 600px; border-radius: 14px; color: var(--text-main); max-height: 70vh; overflow-y: auto; }
+        .close-modal { color: var(--text-muted); float: right; font-size: 24px; font-weight: bold; cursor: pointer; }
+        .close-modal:hover { color: var(--text-main); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Omnilingo Global Pro AI & Utility Suite</h1>
+        <p>7 Most Demanded High-Performance AI & Developer Tools in One Dashboard.</p>
+        <div id="regionIndicator" class="region-badge"><i class="fa-solid fa-globe"></i> Detecting Region...</div>
+        
+        <div class="policy-nav">
+            <a href="#" onclick="openModal('privacy')">Privacy Policy</a> | 
+            <a href="#" onclick="openModal('terms')">Terms of Service</a> | 
+            <a href="#" onclick="openModal('about')">About Us</a> | 
+            <a href="#" onclick="openModal('contact')">Contact Us</a>
+        </div>
+    </div>
+
+    <div class="tools-grid">
+        <!-- 1. Snap & Explain AI -->
+        <div class="tool-box tool-full">
+            <div class="tool-title"><i class="fa-solid fa-wand-magic-sparkles"></i> 1. Snap & Explain AI (Image & Error Analyzer)</div>
+            <div class="tool-desc">Upload any bug screenshot, UI layout, or problem chart for secure AI troubleshooting and breakdown.</div>
+            
+            <div class="upload-dropzone" onclick="document.getElementById('imageInput').click()">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.6rem; color: var(--primary); margin-bottom: 4px;"></i>
+                <h4 id="uploadLabel" style="margin: 3px 0; font-size: 0.88rem; font-weight: 500;">Drop image or click to browse</h4>
+                <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+            </div>
+            <img id="imagePreview" class="preview-thumb" alt="Preview">
+
+            <div class="input-group" style="margin-top: 10px;">
+                <label for="userQuery">What do you want to solve about this image?</label>
+                <input type="text" id="userQuery" placeholder="e.g., Fix this server error code or explain UI bug.">
+            </div>
+
+            <button class="btn-primary" type="button" onclick="runServerAI()">
+                <i class="fa-solid fa-bolt"></i> Analyze via Secure Server AI
+            </button>
+
+            <div id="aiResultsWrapper" class="ai-results-container">
+                <div class="result-card">
+                    <div class="result-card-title"><i class="fa-solid fa-brain"></i> AI Analysis & Solution Output</div>
+                    <div id="resText"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="adsense-slot">[ Google AdSense High-RPM Header Banner ]</div>
+
+        <!-- 2. AI Content Humanizer / Paraphraser -->
+        <div class="tool-box">
+            <div class="tool-title"><i class="fa-solid fa-feather"></i> 2. AI Content Humanizer</div>
+            <div class="tool-desc">Rewrite AI-generated paragraphs into 100% natural, human-like content instantly.</div>
+            <textarea id="humanText" rows="3" placeholder="Paste robotic AI text here..."></textarea>
+            <button class="btn-primary" type="button" onclick="runHumanizerAI()">
+                <i class="fa-solid fa-wand-magic"></i> Humanize Content
+            </button>
+            <div id="humanResultsWrapper" class="ai-results-container">
+                <div class="result-card" id="humanResText"></div>
+            </div>
+        </div>
+
+        <!-- 3. SEO Meta Tag & Keyword Generator -->
+        <div class="tool-box">
+            <div class="tool-title"><i class="fa-solid fa-tags"></i> 3. SEO Meta Tag Generator</div>
+            <div class="tool-desc">Generate optimized SEO title, meta description & keywords for your web page or blog.</div>
+            <input type="text" id="seoTopic" placeholder="Enter post topic / title..." style="margin-bottom: 10px;">
+            <button class="btn-primary" type="button" onclick="runSeoAI()">
+                <i class="fa-solid fa-magnifying-glass-chart"></i> Generate Meta Tags
+            </button>
+            <div id="seoResultsWrapper" class="ai-results-container">
+                <div class="result-card" id="seoResText"></div>
+            </div>
+        </div>
+
+        <!-- 4. Advanced Word, Character & Readability Counter -->
+        <div class="tool-box">
+            <div class="tool-title"><i class="fa-solid fa-file-lines"></i> 4. Word & Readability Counter</div>
+            <div class="tool-desc">Real-time word count, character count, and estimated reading time calculator.</div>
+            <textarea id="wordText" rows="3" placeholder="Type or paste content here..."></textarea>
+            <div class="counter-footer">
+                <div>Words: <span id="wCount" style="color: var(--primary); font-weight: 700;">0</span> | Chars: <span id="cCount" style="color: var(--primary); font-weight: 700;">0</span> | Read: <span id="rTime" style="color: #10b981; font-weight: 700;">0m</span></div>
+                <button class="btn-clear" onclick="clearCounter()">Clear</button>
+            </div>
+        </div>
+
+        <!-- 5. Secure Password & Hash Generator -->
+        <div class="tool-box">
+            <div class="tool-title"><i class="fa-solid fa-shield-halved"></i> 5. Secure Password Generator</div>
+            <div class="tool-desc">Create highly secure, randomized cryptographic passwords instantly.</div>
+            <div class="input-group">
+                <label>Length: <span id="passLenVal">16</span></label>
+                <input type="range" id="passLen" min="8" max="32" value="16" oninput="document.getElementById('passLenVal').innerText = this.value" style="width:100%; accent-color: var(--primary);">
+            </div>
+            <button class="btn-primary" type="button" onclick="generatePassword()">
+                <i class="fa-solid fa-key"></i> Generate Password
+            </button>
+            <div class="output-box-inline" id="passOutput">Click generate...</div>
+        </div>
+
+        <!-- 6. QR Code Generator Tool -->
+        <div class="tool-box">
+            <div class="tool-title"><i class="fa-solid fa-qrcode"></i> 6. Instant QR Code Generator</div>
+            <div class="tool-desc">Convert any URL or plain text into a scannable QR code instantly.</div>
+            <input type="text" id="qrInput" placeholder="Enter URL or text..." style="margin-bottom: 10px;">
+            <button class="btn-primary" type="button" onclick="generateQRCode()">
+                <i class="fa-solid fa-qrcode"></i> Generate QR Code
+            </button>
+            <div style="text-align: center; margin-top: 10px;">
+                <img id="qrImage" style="display: none; max-width: 120px; border-radius: 8px; border: 1px solid var(--border-color); margin: 0 auto;" alt="QR Code">
+            </div>
+        </div>
+
+        <!-- 7. JSON / Code Formatter & Validator -->
+        <div class="tool-box">
+            <div class="tool-title"><i class="fa-solid fa-code"></i> 7. JSON Formatter & Validator</div>
+            <div class="tool-desc">Clean, validate, and beautify messy JSON strings or code snippets.</div>
+            <textarea id="jsonInput" rows="3" placeholder="Paste unformatted JSON here..."></textarea>
+            <button class="btn-primary" type="button" onclick="formatJSON()">
+                <i class="fa-solid fa-broom"></i> Format & Validate JSON
+            </button>
+            <div id="jsonResultsWrapper" class="ai-results-container">
+                <div class="result-card" id="jsonResText" style="color: #4ade80; font-family: monospace;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Policies -->
+<div id="policyModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h2 id="modalHeader" style="color: #c084fc; margin-top: 0;">Policy</h2>
+        <div id="modalBody" style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);"></div>
+    </div>
+</div>
+
+<script>
+    let userDetectedLang = 'en';
+
+    async function detectUserContext() {
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const data = await res.json();
+            if(data && data.country_name) {
+                document.getElementById('regionIndicator').innerHTML = `<i class="fa-solid fa-location-dot"></i> Region: ${data.country_name} (${data.country_code})`;
+                if(data.country_code === 'BD' || navigator.language.startsWith('bn')) {
+                    userDetectedLang = 'bn';
+                }
+            }
+        } catch(e) {}
+    }
+    detectUserContext();
+
+    const policies = {
+        privacy: { title: "Privacy Policy", content: "We protect your data. All uploaded images and text are securely processed and never permanently stored." },
+        terms: { title: "Terms of Service", content: "Tools are provided as-is for productivity and developer assistance purposes." },
+        about: { title: "About Us", content: "Omnilingo Pro AI Suite provides professional, high-demand utilities for global creators and developers." },
+        contact: { title: "Contact Us", content: "For support, reach out via our official admin administration channels." }
+    };
+
+    function openModal(type) {
+        const p = policies[type];
+        document.getElementById('modalHeader').innerText = p.title;
+        document.getElementById('modalBody').innerText = p.content;
+        document.getElementById('policyModal').style.display = 'block';
+    }
+    function closeModal() { document.getElementById('policyModal').style.display = 'none'; }
+    window.onclick = function(event) { if (event.target == document.getElementById('policyModal')) closeModal(); }
+
+    let uploadedFileObj = null;
+    let base64Image = null;
+
+    function previewImage(event) {
+        uploadedFileObj = event.target.files[0];
+        const display = document.getElementById('uploadLabel');
+        const preview = document.getElementById('imagePreview');
+        if(uploadedFileObj) {
+            display.innerHTML = `<i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Selected: ${uploadedFileObj.name}`;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                base64Image = e.target.result.split(',')[1];
+            }
+            reader.readAsDataURL(uploadedFileObj);
+        }
+    }
+
+    // Backend Gemini API Router
+    async function callGeminiBackend(promptText, imageBase64, mimeType, resultElemId, wrapperElemId) {
+        const wrapper = document.getElementById(wrapperElemId);
+        const resElem = document.getElementById(resultElemId);
+        wrapper.style.display = 'flex';
+        resElem.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing through secure backend server...`;
+
+        try {
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: imageBase64, mimeType: mimeType, query: promptText })
+            });
+            const data = await response.json();
+            if(data.success) {
+                resElem.innerText = data.result;
+            } else {
+                resElem.innerHTML = `<span style="color: #ef4444;">Error: ${data.error}</span>`;
+            }
+        } catch(err) {
+            resElem.innerHTML = `<span style="color: #ef4444;">Connection error: ${err.message}</span>`;
+        }
+    }
+
+    // Tool 1: Snap & Explain
+    function runServerAI() {
+        const query = document.getElementById('userQuery').value.trim() || "Analyze this image.";
+        callGeminiBackend(query, base64Image, uploadedFileObj ? uploadedFileObj.type : null, 'resText', 'aiResultsWrapper');
+    }
+
+    // Tool 2: Humanizer
+    function runHumanizerAI() {
+        const text = document.getElementById('humanText').value.trim();
+        if(!text) { alert("Please enter text to humanize."); return; }
+        callGeminiBackend(`Rewrite the following text to sound 100% natural, human-written, and engaging (remove AI robotic patterns): \n\n"${text}"`, null, null, 'humanResText', 'humanResultsWrapper');
+    }
+
+    // Tool 3: SEO Generator
+    function runSeoAI() {
+        const topic = document.getElementById('seoTopic').value.trim();
+        if(!topic) { alert("Please enter a topic."); return; }
+        callGeminiBackend(`Generate SEO Title (under 60 chars), Meta Description (under 160 chars), and Top 5 High-Ranking Keywords for the topic: "${topic}"`, null, null, 'seoResText', 'seoResultsWrapper');
+    }
+
+    // Tool 4: Word Counter
+    const wordText = document.getElementById('wordText');
+    const wCount = document.getElementById('wCount');
+    const cCount = document.getElementById('cCount');
+    const rTime = document.getElementById('rTime');
+    wordText.addEventListener('input', () => {
+        const val = wordText.value.trim();
+        const chars = val.length;
+        const words = val === '' ? 0 : val.split(/\s+/).filter(Boolean).length;
+        const readMins = Math.ceil(words / 200);
+        cCount.innerText = chars;
+        wCount.innerText = words;
+        rTime.innerText = `${readMins}m`;
+    });
+    function clearCounter() { wordText.value = ''; wCount.innerText = '0'; cCount.innerText = '0'; rTime.innerText = '0m'; }
+
+    // Tool 5: Password Generator
+    function generatePassword() {
+        const len = document.getElementById('passLen').value;
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!";
+        let pass = "";
+        for (let i = 0; i < len; i++) {
+            pass += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('passOutput').innerText = pass;
+    }
+
+    // Tool 6: QR Code Generator
+    function generateQRCode() {
+        const val = document.getElementById('qrInput').value.trim();
+        if(!val) { alert("Please enter text or URL for QR code."); return; }
+        const qrImg = document.getElementById('qrImage');
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(val)}`;
+        qrImg.style.display = 'block';
+    }
+
+    // Tool 7: JSON Formatter
+    function formatJSON() {
+        const input = document.getElementById('jsonInput').value.trim();
+        const wrapper = document.getElementById('jsonResultsWrapper');
+        const resElem = document.getElementById('jsonResText');
+        wrapper.style.display = 'flex';
+        try {
+            const parsed = JSON.parse(input);
+            resElem.innerText = JSON.stringify(parsed, null, 4);
+            resElem.style.color = '#4ade80';
+        } catch(e) {
+            resElem.innerText = "Invalid JSON Syntax: " + e.message;
+            resElem.style.color = '#ef4444';
+        }
+    }
+</script>
+</body>
+</html>
